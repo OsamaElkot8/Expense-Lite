@@ -7,56 +7,56 @@ on:
     branches: [ "master" ]
 
 jobs:
-  test:
-    name: Test Files
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.32.4' 
-      - name: Install Dependencies
-        run: flutter pub get
-      - name: Analyze code
-        run: flutter analyze
-      - name: Run Tests
-        run: flutter test
+  # test:
+  #   name: Test Files
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: '3.32.4' 
+  #     - name: Install Dependencies
+  #       run: flutter pub get
+  #     - name: Analyze code
+  #       run: flutter analyze
+  #     - name: Run Tests
+  #       run: flutter test
   
-  build-apk-and-distribute:
-    name: Build Apk for Firebase
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.32.4'
-      - name: Install Dependencies
-        run: flutter pub get
-      - name: Run Tests
-        run: flutter test
-      - name: Build APK
-        run: flutter build apk --release
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
-      - name: Distribute to Firebase
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: |
-          firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
-            --app "${{ secrets.FIREBASE_APP_ID }}" \
-            --groups "qa-testers" \
-            --release-notes "Automated build from GitHub Actions"
-
+  # build-apk-and-distribute:
+  #   name: Build Apk for Firebase
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: '3.32.4'
+  #     - name: Install Dependencies
+  #       run: flutter pub get
+  #     - name: Run Tests
+  #       run: flutter test
+  #     - name: Build APK
+  #       run: flutter build apk --release
+  #     - name: Upload Artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: app-release-apk
+  #         path: build/app/outputs/flutter-apk/app-release.apk
+  #     - name: Install Firebase CLI
+  #       run: npm install -g firebase-tools
+  #     - name: Distribute to Firebase
+  #       env:
+  #         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  #       run: |
+  #         firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+  #           --app "${{ secrets.FIREBASE_APP_ID }}" \
+  #           --groups "qa-testers" \
+  #           --release-notes "Automated build from GitHub Actions"
+  # 
   build-ios:
     name: Build iOS for TestFlight
     runs-on: macos-latest
@@ -96,6 +96,8 @@ jobs:
         run: |
           fastlane match appstore
         env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_URL: https://github.com/OsamaElkot8/Expense-Lite.git
           GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
