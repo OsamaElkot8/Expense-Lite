@@ -143,7 +143,7 @@ flutter build ios --release
 - `hive: ^2.2.3` & `hive_flutter: ^1.1.0` - Local storage
 - `http: ^1.2.0` - HTTP client for API calls
 - `equatable: ^2.0.5` - Value equality
-- `intl: ^0.19.0` - Internationalization
+- `intl: ^0.20.2` - Internationalization
 - `image_picker: ^1.0.7` - Image selection
 - `pdf: ^3.10.7` - PDF generation
 - `csv: ^5.0.2` - CSV export
@@ -186,7 +186,6 @@ The project includes GitHub Actions workflow (`.github/workflows/ci.yml`) that:
 - **Endpoint**: `https://open.er-api.com/v6/latest/USD`
 - **No API Key Required**: Free tier available
 - **Implementation**: Real-time conversion when saving expenses
-- **Caching**: Currency rates are stored locally for offline use
 
 ## 💾 Local Storage Strategy
 
@@ -203,6 +202,14 @@ The app closely follows the provided design with:
 - Consistent color scheme (blue primary)
 - Smooth animations and transitions
 - Responsive design
+
+## 🖼️ Screenshots
+
+<p float="left">
+  <img src="assets/screenshots/Dashboard.png" width="300" />
+  <img src="assets/screenshots/Add Expense.png" width="300" />
+</p>
+
 
 ## 📝 Known Limitations
 
