@@ -7,22 +7,22 @@ on:
     branches: [ "master" ]
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
-  #     - name: Set up Flutter
-  #       uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: '3.32.4' # or your app version
-  #     - name: Install Dependencies
-  #       run: flutter pub get
-  #     - name: Analyze code
-  #       run: flutter analyze
-  #     - name: Run Tests
-  #       run: flutter test
-  # 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.4' 
+      - name: Install Dependencies
+        run: flutter pub get
+      - name: Analyze code
+        run: flutter analyze
+      - name: Run Tests
+        run: flutter test
+  
   build-apk-and-distribute:
     runs-on: ubuntu-latest
     needs: test
@@ -32,7 +32,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.32.4' # or your app version
+          flutter-version: '3.32.4'
       - name: Install Dependencies
         run: flutter pub get
       - name: Run Tests
@@ -55,56 +55,57 @@ jobs:
             --groups "qa-testers" \
             --release-notes "Automated build from GitHub Actions"
 
-  # build-ios:
-  #   name: Build iOS for TestFlight
-  #   runs-on: macos-latest
-  #   # needs: test
+  build-ios:
+    name: Build iOS for TestFlight
+    runs-on: macos-latest
+    needs: test
 
-  #   steps:
-  #   - uses: actions/checkout@v3
+    steps:
+    - name: Checkout
+    - uses: actions/checkout@v4
 
-  #   - name: Setup Xcode version
-  #     uses: maxim-lobanov/setup-xcode@v1
-  #     with:
-  #       xcode-version: '16.4'
+    - name: Setup Xcode version
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.4'
 
-  #   - name: Set up Flutter
-  #     uses: subosito/flutter-action@v2
-  #     with:
-  #       flutter-version: '3.32.4'
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.32.4'
 
-  #   - name: Install dependencies
-  #     run: flutter pub get
+    - name: Install dependencies
+      run: flutter pub get
 
-  #   - name: Build iOS
-  #     run: flutter build ios --release --no-codesign
+    - name: Build iOS
+      run: flutter build ios --release --no-codesign
 
-  #   - name: Setup Ruby
-  #     uses: ruby/setup-ruby@v1
-  #     with:
-  #       ruby-version: '3.4.7'
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4.7'
 
-  #   - name: Setup git auth for Match
-  #     run: |
-  #       git config --global url."https://${{ secrets.MATCH_GIT_AUTH }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+    - name: Setup git auth for Match
+      run: |
+        git config --global url."https://${{ secrets.MATCH_GIT_AUTH }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
   
-  #   - name: Install Fastlane
-  #     run: gem install fastlane
+    - name: Install Fastlane
+      run: gem install fastlane
 
-  #   - name: Fastlane Match Setup
-  #     run: |
-  #       fastlane match appstore
-  #     env:
-  #       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-  #       MATCH_GIT_URL: https://github.com/OsamaElkot8/Expense-Lite.git
-  #       GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
+    - name: Fastlane Match Setup
+      run: |
+        fastlane match appstore
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GIT_URL: https://github.com/OsamaElkot8/Expense-Lite.git
+        GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
 
-  #   - name: Deploy to TestFlight
-  #     run: |
-  #       cd ios
-  #       fastlane beta
-  #     env:
-  #       APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-  #       APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-  #       APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+    - name: Deploy to TestFlight
+      run: |
+        cd ios
+        fastlane beta
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
 
