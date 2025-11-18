@@ -8,6 +8,7 @@ on:
 
 jobs:
   test:
+    name: Test Files
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -24,6 +25,7 @@ jobs:
         run: flutter test
   
   build-apk-and-distribute:
+    name: Build Apk for Firebase
     runs-on: ubuntu-latest
     needs: test
     steps:
