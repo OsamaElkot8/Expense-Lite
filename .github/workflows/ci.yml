@@ -23,7 +23,7 @@ jobs:
   #       run: flutter analyze
   #     - name: Run Tests
   #       run: flutter test
-  
+  # 
   # build-apk-and-distribute:
   #   name: Build Apk for Firebase
   #   runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
   build-ios:
     name: Build iOS for TestFlight
     runs-on: macos-latest
-    needs: test
+    # needs: test
     steps:
       - uses: actions/checkout@v4
 
