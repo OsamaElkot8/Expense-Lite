@@ -84,10 +84,10 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4.7'
-
-      - name: Setup git auth for Match
-        run: |
-          git config --global url."https://${{ secrets.MATCH_GIT_AUTH }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+# 
+      # - name: Setup git auth for Match
+      #   run: |
+      #     git config --global url."https://${{ secrets.MATCH_GIT_AUTH }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
   
       - name: Install Fastlane
         run: gem install fastlane
@@ -99,7 +99,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_URL: https://github.com/OsamaElkot8/Expense-Lite.git
+          MATCH_GIT_URL: "https://${{ secrets.MATCH_GIT_AUTH }}:x-oauth-basic@github.com/OsamaElkot8/Expense-Lite.git"
           GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
 
       - name: Deploy to TestFlight
