@@ -23,14 +23,14 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryBlue,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.surfaceColor,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           textStyle: AppTextStyles.labelLarge.copyWith(
-            color: Colors.white,
+            color: AppColors.surfaceColor,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -70,7 +70,7 @@ class AppTheme {
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primaryBlue,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.surfaceColor,
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
@@ -86,25 +86,25 @@ class AppTheme {
       textTheme: AppTextStyles.textTheme,
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.darkColorScheme.surface,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.surfaceColor,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: AppTextStyles.titleLarge.copyWith(
-          color: Colors.white,
+          color: AppColors.surfaceColor,
           fontWeight: FontWeight.bold,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryBlue,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.surfaceColor,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           textStyle: AppTextStyles.labelLarge.copyWith(
-            color: Colors.white,
+            color: AppColors.surfaceColor,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -144,7 +144,7 @@ class AppTheme {
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primaryBlue,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.surfaceColor,
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),

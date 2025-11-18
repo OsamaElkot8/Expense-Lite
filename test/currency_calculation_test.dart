@@ -14,7 +14,7 @@ void main() {
           100.0,
           AppConstants.baseCurrency,
         );
-        expect(result, 100.0);
+        expect(result.data, 100.0);
       } catch (e) {
         // API might be unavailable in test environment
         expect(true, true); // Skip test if API unavailable
@@ -29,8 +29,8 @@ void main() {
         try {
           // Test with EUR (assuming API returns rates)
           final result = await apiClient.convertToUSD(100.0, 'EUR');
-          expect(result, isA<double>());
-          expect(result, greaterThan(0));
+          expect(result.data, isA<double>());
+          expect(result.data, greaterThan(0));
         } catch (e) {
           // API might be unavailable in test environment
           expect(true, true); // Skip test if API unavailable
@@ -43,9 +43,9 @@ void main() {
 
       try {
         final rates = await apiClient.getLatestRates();
-        expect(rates.baseCurrency, AppConstants.baseCurrency);
-        expect(rates.rates, isNotEmpty);
-        expect(rates.rates.containsKey('EUR'), true);
+        expect(rates.data?.baseCurrency, AppConstants.baseCurrency);
+        expect(rates.data?.rates, isNotEmpty);
+        expect(rates.data?.rates.containsKey('EUR'), true);
       } catch (e) {
         // API might be unavailable in test environment
         expect(true, true); // Skip test if API unavailable

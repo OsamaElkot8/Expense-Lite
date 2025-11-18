@@ -82,7 +82,7 @@ class _BalanceCardState extends State<BalanceCard> {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.primaryBlueLight,
+        color: context.colorScheme.tertiary,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -94,23 +94,23 @@ class _BalanceCardState extends State<BalanceCard> {
               Text(
                 context.l10n.totalBalance,
                 style: context.textTheme.titleMedium?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: context.colorScheme.surface.withValues(alpha: 0.9),
                 ),
               ),
               PopupMenuButton<String>(
                 icon: _isExporting
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
+                            context.colorScheme.surface,
                           ),
                         ),
                       )
-                    : const Icon(Icons.more_vert, color: Colors.white),
-                color: Colors.white,
+                    : Icon(Icons.more_vert, color: context.colorScheme.surface),
+                color: context.colorScheme.surface,
                 enabled: !_isExporting,
                 onSelected: _handleExport,
                 itemBuilder: (context) => [
@@ -121,7 +121,7 @@ class _BalanceCardState extends State<BalanceCard> {
                       children: [
                         const Icon(Icons.table_chart, size: 20),
                         const SizedBox(width: 12),
-                        const Text('Export as CSV'),
+                        Text(context.l10n.exportAsCsv),
                       ],
                     ),
                   ),
@@ -132,7 +132,7 @@ class _BalanceCardState extends State<BalanceCard> {
                       children: [
                         const Icon(Icons.picture_as_pdf, size: 20),
                         const SizedBox(width: 12),
-                        const Text('Export as PDF'),
+                        Text(context.l10n.exportAsPdf),
                       ],
                     ),
                   ),
@@ -144,7 +144,7 @@ class _BalanceCardState extends State<BalanceCard> {
           Text(
             currencyFormat.format(widget.totalBalance),
             style: context.textTheme.headlineLarge?.copyWith(
-              color: Colors.white,
+              color: context.colorScheme.surface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -190,13 +190,13 @@ class _BalanceCardState extends State<BalanceCard> {
             Text(
               label,
               style: context.textTheme.bodySmall?.copyWith(
-                color: Colors.white.withValues(alpha: 0.8),
+                color: context.colorScheme.surface.withValues(alpha: 0.8),
               ),
             ),
             Text(
               amount,
               style: context.textTheme.titleSmall?.copyWith(
-                color: Colors.white,
+                color: context.colorScheme.surface,
                 fontWeight: FontWeight.bold,
               ),
             ),

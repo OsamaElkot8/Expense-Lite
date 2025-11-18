@@ -1,3 +1,5 @@
+import 'package:expense_tracker_lite/features/dashboard/presentation/blocs/dashboard_bloc/dashboard_bloc.dart';
+import 'package:expense_tracker_lite/features/dashboard/presentation/blocs/dashboard_bloc/dashboard_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../dashboard/repositories/expense_repository.dart';
@@ -12,12 +14,15 @@ import 'add_expense_state.dart';
 class AddExpenseBloc extends Bloc<AddExpenseEvent, AddExpenseState> {
   final ExpenseRepository _expenseRepository;
   final CurrencyApiClient _currencyApiClient;
+  final DashboardBloc? _dashboardBloc;
 
   AddExpenseBloc({
     required ExpenseRepository expenseRepository,
     CurrencyApiClient? currencyApiClient,
+    DashboardBloc? dashboardBloc,
   }) : _expenseRepository = expenseRepository,
        _currencyApiClient = currencyApiClient ?? CurrencyApiClient(),
+       _dashboardBloc = dashboardBloc,
        super(const AddExpenseLoaded()) {
     on<AddExpenseInitialized>(_onInitialized);
     on<AddExpenseCategoryChanged>(_onCategoryChanged);
@@ -27,6 +32,19 @@ class AddExpenseBloc extends Bloc<AddExpenseEvent, AddExpenseState> {
     on<AddExpenseReceiptChanged>(_onReceiptChanged);
     on<AddExpenseSubmitted>(_onSubmitted);
     on<AddExpenseReset>(_onReset);
+  }
+
+  bool get canSubmit {
+    if (state is AddExpenseLoaded) {
+      final currentState = state as AddExpenseLoaded;
+      return !currentState.isLoading &&
+          currentState.currency.isNotEmpty &&
+          currentState.amount.isNotEmpty &&
+          currentState.date != null &&
+          currentState.category != null;
+    }
+
+    return false;
   }
 
   void _onInitialized(
@@ -122,10 +140,15 @@ class AddExpenseBloc extends Bloc<AddExpenseEvent, AddExpenseState> {
         if (currentState.currency == AppConstants.baseCurrency) {
           amountInUSD = amount;
         } else {
-          amountInUSD = await _currencyApiClient.convertToUSD(
+          final response = await _currencyApiClient.convertToUSD(
             amount,
             currentState.currency,
           );
+          if (response.status != true) {
+            throw Exception(response.message ?? 'Unknown error');
+          }
+
+          amountInUSD = response.data!;
         }
 
         // Create expense entity
@@ -142,6 +165,9 @@ class AddExpenseBloc extends Bloc<AddExpenseEvent, AddExpenseState> {
 
         // Save expense
         await _expenseRepository.saveExpense(expense);
+
+        // refresh dashboard to get updated expenses list
+        _dashboardBloc?.add(const DashboardRefresh());
 
         emit(const AddExpenseSuccess());
       } catch (e) {

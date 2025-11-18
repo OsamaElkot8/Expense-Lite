@@ -3,9 +3,11 @@ import 'package:http/http.dart' as http;
 import '../constants/error_messages.dart';
 
 class ApiClient {
-  final http.Client _client;
+  final http.Client _client = http.Client();
 
-  ApiClient({http.Client? client}) : _client = client ?? http.Client();
+  ApiClient._privateConstructor();
+  static final ApiClient _instance = ApiClient._privateConstructor();
+  factory ApiClient() => _instance;
 
   Future<Map<String, dynamic>> get(String url) async {
     try {

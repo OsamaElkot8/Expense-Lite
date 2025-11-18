@@ -33,6 +33,7 @@ class AppColors {
   static const ColorScheme lightColorScheme = ColorScheme.light(
     primary: primaryBlue,
     secondary: primaryBlueDark,
+    tertiary: primaryBlueLight,
     surface: surfaceColor,
     error: errorColor,
     onPrimary: Colors.white,
@@ -47,6 +48,7 @@ class AppColors {
   static const ColorScheme darkColorScheme = ColorScheme.dark(
     primary: primaryBlueLight,
     secondary: primaryBlue,
+    tertiary: primaryBlueDark,
     surface: Color(0xFF1E1E1E),
     error: errorColor,
     onPrimary: Colors.white,

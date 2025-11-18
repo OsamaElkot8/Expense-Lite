@@ -56,22 +56,58 @@ jobs:
         name: release-apk
         path: build/app/outputs/flutter-apk/app-release.apk
 
-  # build-ios:
-  #   runs-on: macos-latest
-  #   needs: test
-    
-  #   steps:
-  #   - uses: actions/checkout@v3
-    
-  #   - name: Setup Flutter
-  #     uses: subosito/flutter-action@v2
-  #     with:
-  #       flutter-version: '3.24.0'
-  #       channel: 'stable'
-    
-  #   - name: Install dependencies
-  #     run: flutter pub get
-    
-  #   - name: Build iOS
-  #     run: flutter build ios --release --no-codesign
+    - name: Distribute APK via Firebase
+      run: |
+        firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+          --app ${{ secrets.FIREBASE_APP_ID }} \
+          --groups testers \
+          --token ${{ secrets.FIREBASE_TOKEN }}
+
+  build-ios:
+    name: Build iOS for TestFlight
+    runs-on: macos-latest
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Xcode version
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.4'
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.32.4'
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Build iOS
+      run: flutter build ios --release --no-codesign
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4.7'
+
+    - name: Install Fastlane
+      run: gem install fastlane
+
+    - name: Fastlane Match Setup
+      run: |
+        bundle exec fastlane match appstore
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
+
+    - name: Deploy to TestFlight
+      run: |
+        cd ios
+        fastlane beta
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
 

@@ -30,24 +30,26 @@ class CustomButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? context.colorScheme.primary,
-          foregroundColor: textColor ?? Colors.white,
+          foregroundColor: textColor ?? context.colorScheme.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
         ),
         child: isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    context.colorScheme.surface,
+                  ),
                 ),
               )
             : Text(
                 text,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: textColor ?? Colors.white,
+                style: context.textTheme.labelLarge?.copyWith(
+                  color: textColor ?? context.colorScheme.surface,
                   fontWeight: FontWeight.w600,
                 ),
               ),

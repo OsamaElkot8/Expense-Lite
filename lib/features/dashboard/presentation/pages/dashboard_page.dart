@@ -1,4 +1,5 @@
-import 'package:expense_tracker_lite/core/services/navigation_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:expense_tracker_lite/features/dashboard/repositories/expense_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/extensions/context_extensions.dart';
@@ -22,13 +23,16 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  final ScrollController _scrollController = ScrollController();
+  late final ScrollController _scrollController;
+  late final DashboardBloc _dashboardBloc;
 
   @override
   void initState() {
+    _dashboardBloc = DashboardBloc(
+      expenseRepository: ExpenseRepository.instance,
+    )..add(const DashboardInitialized());
+    _scrollController = ScrollController()..addListener(_onScroll);
     super.initState();
-    context.read<DashboardBloc>().add(const DashboardInitialized());
-    _scrollController.addListener(_onScroll);
   }
 
   @override
@@ -40,151 +44,143 @@ class _DashboardPageState extends State<DashboardPage> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.8) {
-      context.read<DashboardBloc>().add(const DashboardLoadMoreExpenses());
+      _dashboardBloc.add(const DashboardLoadMoreExpenses());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.colorScheme.surface.withValues(alpha: 0.98),
-      body: SafeArea(
-        top: false,
-        child: BlocConsumer<DashboardBloc, DashboardState>(
-          listener: (context, state) {
-            if (state is DashboardError) {
-              context.showErrorSnackBar(message: state.message);
-            }
-          },
-          builder: (context, state) {
-            if (state is DashboardLoading) {
-              return const LoadingWidget();
-            }
+    return BlocProvider(
+      create: (context) => _dashboardBloc,
+      child: Scaffold(
+        backgroundColor: context.colorScheme.surface.withValues(alpha: 0.98),
+        body: SafeArea(
+          top: false,
+          child: BlocConsumer<DashboardBloc, DashboardState>(
+            listener: (context, state) {
+              if (state is DashboardError) {
+                context.showErrorSnackBar(message: state.message);
+              }
+            },
+            builder: (context, state) {
+              final controller = context.read<DashboardBloc>();
 
-            if (state is DashboardError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(state.message, textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<DashboardBloc>().add(
-                          const DashboardInitialized(),
-                        );
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
-            }
+              if (state is DashboardLoading) {
+                return const LoadingWidget();
+              }
 
-            if (state is DashboardLoaded) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<DashboardBloc>().add(const DashboardRefresh());
-                },
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        fit: StackFit.loose,
-                        children: [
-                          Container(
-                            height: 274.0,
-                            alignment: Alignment.topCenter,
-                            decoration: BoxDecoration(
-                              color: context.colorScheme.primary,
-                              borderRadius: BorderRadius.vertical(
-                                bottom: Radius.circular(8),
-                              ),
-                            ),
-                            margin: EdgeInsets.only(bottom: 70.0),
-                            padding: EdgeInsets.only(
-                              top: context.statusBarHeight,
-                            ),
-                            child: _buildHeader(context, state),
-                          ),
-                          BalanceCard(
-                            totalBalance: state.totalBalance,
-                            totalIncome: state.totalIncome,
-                            totalExpenses: state.totalExpenses,
-                            currentFilter: state.currentFilter,
-                          ),
-                        ],
+              if (state is DashboardError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(state.message, textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () =>
+                            controller.add(const DashboardInitialized()),
+                        child: Text(context.l10n.retry),
                       ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: _buildRecentExpensesHeader(context),
-                    ),
-                    if (state.expenses.isEmpty)
-                      SliverFillRemaining(
-                        child: EmptyStateWidget(
-                          message: 'No expenses found',
-                          icon: Icons.receipt_long,
+                    ],
+                  ),
+                );
+              }
+
+              if (state is DashboardLoaded) {
+                return RefreshIndicator(
+                  onRefresh: () async =>
+                      controller.add(const DashboardRefresh()),
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          fit: StackFit.loose,
+                          children: [
+                            Container(
+                              height: 274.0,
+                              alignment: Alignment.topCenter,
+                              decoration: BoxDecoration(
+                                color: context.colorScheme.primary,
+                                borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(8),
+                                ),
+                              ),
+                              margin: EdgeInsets.only(bottom: 70.0),
+                              padding: EdgeInsets.only(
+                                top: context.statusBarHeight,
+                              ),
+                              child: _buildHeader(context, state: state),
+                            ),
+                            BalanceCard(
+                              totalBalance: state.totalBalance,
+                              totalIncome: state.totalIncome,
+                              totalExpenses: state.totalExpenses,
+                              currentFilter: state.currentFilter,
+                            ),
+                          ],
                         ),
-                      )
-                    else
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            if (index < state.expenses.length) {
-                              return ExpenseItem(
-                                expense: state.expenses[index],
-                                onDelete: () {
-                                  context.read<DashboardBloc>().add(
+                      ),
+                      SliverToBoxAdapter(
+                        child: _buildRecentExpensesHeader(context),
+                      ),
+                      if (state.expenses.isEmpty)
+                        SliverFillRemaining(
+                          child: EmptyStateWidget(
+                            message: context.l10n.noExpensesFound,
+                            icon: Icons.receipt_long,
+                          ),
+                        )
+                      else
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              if (index < state.expenses.length) {
+                                return ExpenseItem(
+                                  expense: state.expenses[index],
+                                  onDelete: () => controller.add(
                                     DashboardExpenseDeleted(
                                       state.expenses[index].id,
                                     ),
-                                  );
-                                },
-                              );
-                            } else if (state.isLoadingMore) {
-                              return _buildLoadingMoreIndicator(context);
-                            } else if (!state.hasMore &&
-                                state.expenses.isNotEmpty) {
-                              return _buildEndOfListIndicator(context);
-                            }
-                            return const SizedBox.shrink();
-                          },
-                          childCount:
-                              state.expenses.length +
-                              (state.isLoadingMore ? 1 : 0) +
-                              (!state.hasMore && state.expenses.isNotEmpty
-                                  ? 1
-                                  : 0),
+                                  ),
+                                );
+                              } else if (state.isLoadingMore) {
+                                return _buildLoadingMoreIndicator(context);
+                              } else if (!state.hasMore &&
+                                  state.expenses.isNotEmpty) {
+                                return _buildEndOfListIndicator(context);
+                              }
+                              return const SizedBox.shrink();
+                            },
+                            childCount:
+                                state.expenses.length +
+                                (state.isLoadingMore ? 1 : 0) +
+                                (!state.hasMore && state.expenses.isNotEmpty
+                                    ? 1
+                                    : 0),
+                          ),
                         ),
-                      ),
-                  ],
-                ),
-              );
-            }
+                    ],
+                  ),
+                );
+              }
 
-            return const SizedBox.shrink();
-          },
+              return const SizedBox.shrink();
+            },
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await context.navigatorPush(
-            child: const AddExpensePage(),
-          );
-          if (result == true) {
-            NavigationService.context?.read<DashboardBloc>().add(
-              const DashboardRefresh(),
-            );
-          }
-        },
-        child: const Icon(Icons.add),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => context.navigatorPush(
+            child: AddExpensePage(dashboardBloc: _dashboardBloc),
+          ),
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, DashboardLoaded state) {
+  Widget _buildHeader(BuildContext context, {required DashboardLoaded state}) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -193,7 +189,7 @@ class _DashboardPageState extends State<DashboardPage> {
           CircleAvatar(
             radius: 20,
             backgroundColor: context.colorScheme.surface,
-            foregroundImage: NetworkImage(
+            foregroundImage: CachedNetworkImageProvider(
               "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?_gl=1*17m6bxv*_ga*ODM5Mzc1Nzc4LjE3MjQxMzIwMDU.*_ga_8JE65Q40S6*czE3NjM0MzMyNjQkbzI2JGcxJHQxNzYzNDMzMjkwJGozNCRsMCRoMA..",
             ),
             child: Icon(Icons.person, color: context.colorScheme.primary),
@@ -222,9 +218,8 @@ class _DashboardPageState extends State<DashboardPage> {
           const Spacer(),
           FilterDropdown(
             currentFilter: state.currentFilter,
-            onFilterChanged: (filter) {
-              context.read<DashboardBloc>().add(DashboardFilterChanged(filter));
-            },
+            onFilterChanged: (filter) =>
+                _dashboardBloc.add(DashboardFilterChanged(filter)),
           ),
         ],
       ),
@@ -273,7 +268,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Loading more expenses...',
+                  context.l10n.loadingMoreExpenses,
                   style: context.textTheme.bodySmall?.copyWith(
                     color: context.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
@@ -300,7 +295,7 @@ class _DashboardPageState extends State<DashboardPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              'No more expenses',
+              context.l10n.noMoreExpenses,
               style: context.textTheme.bodySmall?.copyWith(
                 color: context.colorScheme.onSurface.withValues(alpha: 0.5),
               ),

@@ -33,7 +33,7 @@ class ExpenseItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: context.colorScheme.onSurface.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 2),
           ),
@@ -45,12 +45,13 @@ class ExpenseItem extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: (category?.color ?? Colors.blue).withValues(alpha: 0.1),
+              color: (category?.color ?? context.colorScheme.primary)
+                  .withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               category?.icon ?? Icons.category,
-              color: category?.color ?? Colors.blue,
+              color: category?.color ?? context.colorScheme.primary,
             ),
           ),
           const SizedBox(width: 16),
@@ -130,7 +131,7 @@ class ExpenseItem extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Delete',
+                        context.l10n.delete,
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: context.colorScheme.error,
                         ),

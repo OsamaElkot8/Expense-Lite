@@ -1,3 +1,4 @@
+import 'package:expense_tracker_lite/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 
 class EmptyStateWidget extends StatelessWidget {
@@ -16,18 +17,14 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 64,
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: .5),
+              color: context.colorScheme.onSurface.withValues(alpha: .5),
             ),
             const SizedBox(height: 16),
           ],
           Text(
             message,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.7),
+            style: context.textTheme.bodyLarge?.copyWith(
+              color: context.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),

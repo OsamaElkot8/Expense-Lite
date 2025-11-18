@@ -154,3 +154,6 @@
 # Keep source file names and line numbers
 -keepattributes SourceFile,LineNumberTable
 
+-keep class com.google.android.play.core.** { *; }
+-dontwarn com.google.android.play.core.**
+

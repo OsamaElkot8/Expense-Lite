@@ -62,10 +62,7 @@ extension ContextExtension on BuildContext {
   }
 
   void showErrorSnackBar({required String message}) {
-    showSnackBarMessage(
-      message: message,
-      backgroundColor: Theme.of(this).colorScheme.error,
-    );
+    showSnackBarMessage(message: message, backgroundColor: colorScheme.error);
   }
 
   void showSuccessSnackBar({required String message}) {

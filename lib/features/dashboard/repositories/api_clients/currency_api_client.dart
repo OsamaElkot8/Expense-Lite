@@ -1,15 +1,18 @@
 import 'package:expense_tracker_lite/core/constants/api_endpoints.dart';
 import 'package:expense_tracker_lite/core/constants/error_messages.dart';
 import 'package:expense_tracker_lite/core/network/api_client.dart';
+import 'package:expense_tracker_lite/core/network/api_response.dart';
 import 'package:expense_tracker_lite/features/dashboard/data/entities/currency_rate_entity.dart';
 
 class CurrencyApiClient {
-  final ApiClient _apiClient;
+  final ApiClient _apiClient = ApiClient();
 
-  CurrencyApiClient({ApiClient? apiClient})
-    : _apiClient = apiClient ?? ApiClient();
+  CurrencyApiClient._privateConstructor();
+  static final CurrencyApiClient _instance =
+      CurrencyApiClient._privateConstructor();
+  factory CurrencyApiClient() => _instance;
 
-  Future<CurrencyRateEntity> getLatestRates() async {
+  Future<ApiResponse<CurrencyRateEntity>> getLatestRates() async {
     try {
       final response = await _apiClient.get(ApiEndpoints.getLatestRates());
 
@@ -20,10 +23,14 @@ class CurrencyApiClient {
           ),
         );
 
-        return CurrencyRateEntity(
-          baseCurrency: response['base_code'] as String? ?? 'USD',
-          rates: rates,
-          lastUpdated: DateTime.now(),
+        return ApiResponse(
+          data: CurrencyRateEntity(
+            baseCurrency: response['base_code'] as String? ?? 'USD',
+            rates: rates,
+            lastUpdated: DateTime.now(),
+          ),
+          status: true,
+          message: 'Latest Rates fetched successfully',
         );
       } else {
         throw Exception(ErrorMessages.currencyConversionError);
@@ -32,32 +39,55 @@ class CurrencyApiClient {
       if (e is Exception) {
         rethrow;
       }
-      throw Exception(ErrorMessages.currencyConversionError);
+      return ApiResponse(
+        data: null,
+        status: false,
+        message: ErrorMessages.currencyConversionError,
+      );
     }
   }
 
-  Future<double> convertToUSD(double amount, String fromCurrency) async {
+  Future<ApiResponse<double>> convertToUSD(
+    double amount,
+    String fromCurrency,
+  ) async {
     if (fromCurrency == 'USD') {
-      return amount;
+      return ApiResponse(
+        data: amount,
+        status: true,
+        message: 'Curency Converted successfully',
+      );
     }
 
     try {
-      final rates = await getLatestRates();
-      final rate = rates.rates[fromCurrency];
+      final response = await getLatestRates();
+      if (response.status) {
+        final rate = response.data?.rates[fromCurrency];
 
-      if (rate == null) {
-        throw Exception('Currency rate not found for $fromCurrency');
+        if (rate == null) {
+          throw Exception('Currency rate not found for $fromCurrency');
+        }
+
+        // Convert from currency to USD
+        // If rate is for USD to currency, we need to invert it
+        // The API returns rates as USD to other currencies
+        return ApiResponse(
+          data: amount / rate,
+          status: true,
+          message: 'Curency Converted successfully',
+        );
+      } else {
+        throw Exception(response.message ?? 'Unknown error');
       }
-
-      // Convert from currency to USD
-      // If rate is for USD to currency, we need to invert it
-      // The API returns rates as USD to other currencies
-      return amount / rate;
     } catch (e) {
       if (e is Exception) {
         rethrow;
       }
-      throw Exception(ErrorMessages.currencyConversionError);
+      return ApiResponse(
+        data: null,
+        status: false,
+        message: ErrorMessages.currencyConversionError,
+      );
     }
   }
 }

@@ -61,6 +61,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
         final hasMore = newExpenses.length == AppConstants.itemsPerPage;
 
+        // THIS LINE OF CODE IS ADDED FOR MORE REALISTIC DATA RETRIEVING SIMULATION
+        // short delay to display loading more indicator for a short period, since local storage is fast to retrieve
+        await Future.delayed(const Duration(seconds: 3));
+
         emit(
           currentState.copyWith(
             expenses: [...currentState.expenses, ...newExpenses],
