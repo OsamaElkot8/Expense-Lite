@@ -117,11 +117,11 @@ jobs:
       #     GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
 
       - name: Set up certificates and provisioning profiles
-          uses: apple-actions/import-codesign-certs@v1
-          with:
-            p12-file-base64: ${{ secrets.IOS_CERTIFICATE }}
-            p12-password: ${{ secrets.CERT_PASSWORD }}
-            mobileprovision-base64: ${{ secrets.IOS_PROFILE }}
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.IOS_CERTIFICATE }}
+          p12-password: ${{ secrets.CERT_PASSWORD }}
+          mobileprovision-base64: ${{ secrets.IOS_PROFILE }}
 
       - name: Deploy to TestFlight
         run: |
