@@ -63,46 +63,44 @@ jobs:
     # needs: test
     steps:
       - uses: actions/checkout@v4
-# 
-#       - name: Setup Xcode version
-#         uses: maxim-lobanov/setup-xcode@v1
-#         with:
-#           xcode-version: '16.4'
 
-#       - name: Set up Flutter
-#         uses: subosito/flutter-action@v2
-#         with:
-#           flutter-version: '3.32.4'
+      - name: Setup Xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'
 
-#       - name: Install dependencies
-#         run: flutter pub get
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.4'
 
-#       - name: Build iOS
-#         run: flutter build ios --release --no-codesign
+      - name: Install dependencies
+        run: flutter pub get
 
-#       - name: Setup Ruby
-#         uses: ruby/setup-ruby@v1
-#         with:
-#           ruby-version: '3.4.7'
-# # 
-#       # - name: Setup git auth for Match
-#       #   run: |
-#       #     git config --global url."https://${{ secrets.MATCH_GIT_AUTH }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-  
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+
+      # - name: Setup Ruby
+      #   uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version: '3.4.7'
+      # 
+      # - name: Setup git auth for Match
+      #   run: |
+      #     git config --global url."https://${{ secrets.MATCH_GIT_AUTH }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+      # 
       - name: Install Fastlane
         run: gem install fastlane
-
-      - name: Fastlane Match Setup
-        run: |
-          fastlane match appstore
-        env:
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
-          # APPLE_ID: ${{ secrets.APPLE_ID }}
-          # FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-          # MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          # MATCH_GIT_URL: https://github.com/OsamaElkot8/Expense-Lite.git
-          # GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
+      # 
+      # - name: Fastlane Match Setup
+      #   run: |
+      #     fastlane match appstore
+      #   env:
+      #     APPLE_ID: ${{ secrets.APPLE_ID }}
+      #     FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+      #     MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      #     MATCH_GIT_URL: https://github.com/OsamaElkot8/Expense-Lite.git
+      #     GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
 
       - name: Deploy to TestFlight
         run: |
