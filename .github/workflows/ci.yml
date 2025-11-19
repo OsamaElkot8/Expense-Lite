@@ -89,20 +89,20 @@ jobs:
       #   run: |
       #     git config --global url."https://${{ secrets.MATCH_GIT_AUTH }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
       # 
-      # - name: Install iOS Certificate
-      #   run: |
-      #     echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > certificate.p12
-      #     security create-keychain -p "" build.keychain
-      #     security import certificate.p12 -k build.keychain -P "${{ secrets.CERT_PASSWORD }}" -T /usr/bin/codesign
-      #     security list-keychains -s build.keychain
-      #     security default-keychain -s build.keychain
-      #     security unlock-keychain -p "" build.keychain
-      # 
-      # - name: Install provisioning profile
-      #   run: |
-      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-      #     echo "${{ secrets.IOS_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/ExpenseLite.mobileprovision
-      # 
+      - name: Install iOS Certificate
+        run: |
+          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > certificate.p12
+          security create-keychain -p "" build.keychain
+          security import certificate.p12 -k build.keychain -P "${{ secrets.CERT_PASSWORD }}" -T /usr/bin/codesign
+          security list-keychains -s build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+
+      - name: Install provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.IOS_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/ExpenseLite.mobileprovision
+
       - name: Install Fastlane
         run: gem install fastlane
       # 
@@ -115,13 +115,6 @@ jobs:
       #     MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       #     MATCH_GIT_URL: https://github.com/OsamaElkot8/Expense-Lite.git
       #     GIT_AUTHORIZATION: ${{ secrets.MATCH_GIT_AUTH }}
-
-      - name: Set up certificates and provisioning profiles
-        uses: apple-actions/import-codesign-certs@v1
-        with:
-          p12-file-base64: ${{ secrets.IOS_CERTIFICATE }}
-          p12-password: ${{ secrets.CERT_PASSWORD }}
-          mobileprovision-base64: ${{ secrets.IOS_PROFILE }}
 
       - name: Deploy to TestFlight
         run: |
