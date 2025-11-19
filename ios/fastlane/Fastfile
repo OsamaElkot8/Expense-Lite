@@ -20,12 +20,16 @@ platform :ios do
   lane :beta do
     increment_build_number(xcodeproj: "Runner.xcodeproj")
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner",
+    clean: true,
     export_method: "app-store",
     export_options: {
       provisioningProfiles: {
         "com.expensetrackeroffline.expense-tracker-lite" => "Expense - Inovola"
-      }
-    })
+      } 
+    },
+     # Skip automatic profile detection if you provide profiles
+     skip_profile_detection: true
+     )
     upload_to_testflight
   end
 end
