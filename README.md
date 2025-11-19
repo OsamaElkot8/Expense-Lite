@@ -228,6 +228,14 @@ The app closely follows the provided design with:
 - [ ] Dark mode toggle
 - [ ] Receipt OCR for automatic expense extraction
 
+## 🔗 Project Links
+
+1. **Firebase App Distribution**: https://appdistribution.firebase.dev/i/6233a38cb6703e39
+2. **iOS (TestFlight)**: https://testflight.apple.com/join/EtvrQAMx
+3. **Android (APK)**: https://drive.google.com/file/d/1a63QennmuOBjd50HOp4g6dHSRyrgZ_5p/view?usp=sharing
+4. **GitHub Actions**: https://github.com/OsamaElkot8/Expense-Lite/blob/master/.github/workflows/ci.yml
+5. **Xcode Cloud**: https://github.com/OsamaElkot8/Expense-Lite/blob/master/ios/ci_scripts/ci_post_clone.sh
+
 ## 📄 License
 
 This project is created for technical assessment purposes.
