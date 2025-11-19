@@ -89,10 +89,19 @@ jobs:
       #   run: |
       #     git config --global url."https://${{ secrets.MATCH_GIT_AUTH }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
       # 
+      - name: Install iOS Certificate
+        run: |
+          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > certificate.p12
+          security create-keychain -p "" build.keychain
+          security import certificate.p12 -k build.keychain -P "${{ secrets.CERT_PASSWORD }}" -T /usr/bin/codesign
+          security list-keychains -s build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+
       - name: Install provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "${{ secrets.IOS_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/appstore.mobileprovision
+          echo "${{ secrets.IOS_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/ExpenseLite.mobileprovision
 
       - name: Install Fastlane
         run: gem install fastlane
