@@ -21,9 +21,6 @@ flutter clean
 #Install Flutter dependencies.
 flutter pub get
 
-# show current version of flutter_paytabs_bridge
-flutter pub deps | grep flutter_paytabs_bridge
-
 #Install CocoaPods using Homebrew.
 HOMEBREW_NO_AUTO_UPDATE=1 # disable homebrew's automatic updates.
 brew install cocoapods
